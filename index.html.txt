@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>LogisticaCDE Reverso (Web)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .form-container, .table-container { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .form-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .form-row label { font-weight: bold; }
+        input[type="text"], select, textarea { padding: 8px; border: 1px solid #ddd; border-radius: 3px; }
+        button { padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+        th { background-color: #f2f2f2; }
+        .flash-message { padding: 10px; margin-bottom: 15px; border-radius: 5px; }
+        .flash-message.error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .flash-message.success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+    </style>
+</head>
+<body>
+    <h1>Gerenciamento de Logística Reverso</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2>Cadastro Rápido</h2>
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('cadastro') }}">
+            <div class="form-row">
+                <label for="placa">Placa:</label>
+                <input type="text" id="placa" name="placa" required>
+                
+                <label for="motorista">Motorista:</label>
+                <input type="text" id="motorista" name="motorista" required>
+                
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone">
+
+                <label for="ci">C.I:</label>
+                <input type="text" id="ci" name="ci">
+            </div>
+            <div class="form-row">
+                <label for="motorista_obs">Obs Motorista:</label>
+                <input type="text" id="motorista_obs" name="motorista_obs" style="width: 300px;">
+                <label for="foto">Path Foto:</label>
+                <input type="text" id="foto" name="foto" placeholder="Caminho/URL da foto">
+                <button type="submit">Cadastrar Caminhão</button>
+            </div>
+        </form>
+    </div>
+
+    <h2>Frota de Caminhões</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Placa</th>
+                    <th>Motorista</th>
+                    <th>Telefone</th>
+                    <th>CI</th>
+                    <th>Obs Motorista</th>
+                    <th>Status Atual</th>
+                    <th>Ação / Nova Obs</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for caminhao in caminhoes %}
+                <tr>
+                    <td>{{ caminhao.id }}</td>
+                    <td>{{ caminhao.placa }}</td>
+                    <td>{{ caminhao.motorista }}</td>
+                    <td>{{ caminhao.telefone }}</td>
+                    <td>{{ caminhao.ci }}</td>
+                    <td>{{ caminhao.motorista_obs }}</td>
+                    
+                    <form method="POST" action="{{ url_for('update_status', id=caminhao.id) }}">
+                        <td>
+                            <select name="status" required>
+                                {% for status in status_opcoes %}
+                                    <option value="{{ status }}" {% if status == caminhao.status %}selected{% endif %}>
+                                        {{ status }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <br>
+                            <small>Obs: {{ caminhao.observacao }}</small>
+                        </td>
+                        <td>
+                            <input type="text" name="observacao" placeholder="Nova Observação" value="{{ caminhao.observacao or '' }}">
+                            <button type="submit">Salvar</button>
+                        </td>
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
