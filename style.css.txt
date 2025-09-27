@@ -1,0 +1,8 @@
+body {
+    background-color: #f4f4f4; /* Cor de fundo cinza claro */
+    font-family: Arial, sans-serif;
+}
+.header {
+    color: navy; /* Cor do cabeçalho azul escuro */
+    text-align: center;
+}
